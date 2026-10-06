@@ -1,0 +1,36 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}{{ exam.title }} - Quiz App{% endblock %}
+
+{% block nav %}
+<a href="{% url 'quiz:exam_list' %}">Back to Exams</a>
+<a href="{% url 'quiz:question_create' exam_pk=exam.pk %}" class="btn btn-success">Add Question</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ exam.title }}</h1>
+    <p>{{ exam.description }}</p>
+    <small>Created: {{ exam.created_at|date:"M d, Y" }}</small>
+</div>
+
+<h2>Questions ({{ questions.count }})</h2>
+
+{% if questions %}
+{% for question in questions %}
+<div class="card">
+    <h3>{{ forloop.counter }}. {{ question.statement }}</h3>
+    <span class="badge">{{ question.get_difficulty_display }}</span>
+    <ul style="margin-top: 0.5rem; padding-left: 1rem;">
+    {% for choice in question.answers.all %}
+        <li>
+            <strong>{{ choice.is_correct|yesno:"Correct, Incorrect" }}</strong>: {{ choice.text }}
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endfor %}
+{% else %}
+<p>No questions for this exam yet.</p>
+{% endif %}
+{% endblock %}

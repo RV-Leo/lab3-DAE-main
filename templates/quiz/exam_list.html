@@ -1,0 +1,23 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Exams - Quiz App{% endblock %}
+
+{% block content %}
+<h1>Exams</h1>
+
+<a href="#" class="btn btn-success">New Exam</a>
+
+{% if exams %}
+<ul style="margin-top: 1rem;">
+    {% for exam in exams %}
+    <li class="card">
+        <h3><a href="{% url 'quiz:exam_detail' pk=exam.pk %}">{{ exam.title }}</a></h3>
+        <p>{{ exam.description|truncatewords:30 }}</p>
+        <small>Created: {{ exam.created_at|date:"M d, Y" }} | Questions: {{ exam.questions.count }}</small>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No exams available.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Add Question - {{ exam.title }}{% endblock %}
+
+{% block nav %}
+<a href="{% url 'quiz:exam_list' %}">Back to Exams</a>
+<a href="{% url 'quiz:exam_detail' pk=exam.pk %}">Back to Exam</a>
+{% endblock %}
+
+{% block content %}
+<h2>Add Question to "{{ exam.title }}"</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <h3>Question</h3>
+    {% for field in form %}
+    <label>{{ field.label }}</label>
+    {{ field }}
+    {% if field.errors %}
+    <ul style="color: #e74c3c;">
+        {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    {% endfor %}
+
+    <h3>Answer Choices</h3>
+    {{ choice_formset.management_form }}
+    {% for inline_form in choice_formset %}
+    <div class="form-row">
+        {% for hidden_field in inline_form.hidden_fields %}{{ hidden_field }}{% endfor %}
+        <input type="text" name="{{ inline_form.text.name }}" value="{{ inline_form.text.value|default:'' }}" placeholder="Answer option">
+        <label style="margin-left: 0.5rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+            Correct: {{ inline_form.is_correct }}
+        </label>
+        {% if inline_form.is_correct.errors %}
+        <ul style="color: #e74c3c; margin: 0;">
+            {% for error in inline_form.is_correct.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if choice_formset.non_form_errors %}
+    <div style="color: #e74c3c; margin-bottom: 1rem;">
+        {% for error in choice_formset.non_form_errors %}{{ error }}{% endfor %}
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-success">Save Question</button>
+</form>
+{% endblock %}
